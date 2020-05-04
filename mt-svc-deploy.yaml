@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: mt2
+  name: mt2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mt2
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mt2
+    spec:
+      containers:
+      - image: mt2
+        resources:
+          limits:
+            memory: "2Gi"
+          requests:
+            memory: "600Mi"
+
+        name: mt2
+        imagePullPolicy: IfNotPresent
+        workingDir: /host
+        command: ["python", "model_api.py", "averaged-ende-export500k-v2"]
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: code
+          mountPath: /host
+      volumes:
+      - name: code
+        hostPath:
+          path: /host
+        

@@ -1,0 +1,67 @@
+{% extends 'layout.html' %}
+
+{% block body %} 
+    <div class="container">
+        <form id="form_to_submit">
+            <div class="form-group form-inline">
+                <label for="from_language">Original Language:</label>
+                <select class="form-control" id="from_language" style="width: 200px">
+                    <option selected disabled hidden>Language</option>
+                    <option value="English">English</option>
+                    <option value="Hindi">Hindi</option>
+                    <option value="Spanish">Spanish</option>
+                    <option value="Japanese">Japanese</option>
+                    <option value="German">German</option>
+                </select>
+            </div>
+
+            <div class="form-group form-inline">
+                <label for="to_language">New Language:</label>
+                <select class="form-control" id="to_language" style="width: 200px">
+                    <option selected disabled hidden>Language</option>
+                    <option value="English">English</option>
+                    <option value="Hindi">Hindi</option>
+                    <option value="Spanish">Spanish</option>
+                    <option value="Japanese">Japanese</option>
+                    <option value="German">German</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="input">Input:</label>
+                <textarea class="form-control" rows="5" id="input_val" placeholder="Enter text here"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="output">Output:</label>
+                <textarea class="form-control" rows="5" id="output_val" ></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-default" id='submit_btn'>Submit</button>
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#form_to_submit').on('submit', function(event) {
+                $.ajax({
+                    data : {
+                        from_language : $('#from_language').val(),
+                        to_language : $('#to_language').val(),
+                        input_val : $('#input_val').val(),
+                    },
+                    type : 'POST',
+                    url : '/process'
+                })
+
+                .done(function(data) {
+                    if (!data.error) {
+                        $('#output_val').text(data.output_val);
+                    }
+                });
+                event.preventDefault();
+            });
+        });
+    </script>
+
+{% endblock %}

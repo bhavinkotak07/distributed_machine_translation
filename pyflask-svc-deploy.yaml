@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: pyflask
+  name: pyflask
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: pyflask
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: pyflask
+    spec:
+      containers:
+      - image: py_flask
+        name: pyflask
+        imagePullPolicy: IfNotPresent
+        workingDir: /host
+        command: ["python", "flask_project/flask_project/app.py"]
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: code
+          mountPath: /host
+      
+      volumes:
+      - name: code
+        hostPath:
+          path: /host
+        

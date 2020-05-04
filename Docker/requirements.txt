@@ -1,0 +1,6 @@
+tensorflow
+tensorflow-addons
+flask
+requests
+pyonmttok
+
