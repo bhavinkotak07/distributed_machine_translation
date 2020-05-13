@@ -31,13 +31,16 @@
                 <label for="input">Input:</label>
                 <textarea class="form-control" rows="5" id="input_val" placeholder="Enter text here"></textarea>
             </div>
+            <button type="submit" class="btn btn-default" id='submit_btn'>Translate</button>
 
             <div class="form-group">
                 <label for="output">Output:</label>
                 <textarea class="form-control" rows="5" id="output_val" ></textarea>
             </div>
+            <div class="form-group">
+                <label id="ip_address" for="ip_address"></label>
+            </div>
 
-            <button type="submit" class="btn btn-default" id='submit_btn'>Submit</button>
         </form>
     </div>
 
@@ -56,7 +59,16 @@
 
                 .done(function(data) {
                     if (!data.error) {
-                        $('#output_val').text(data.output_val);
+                        if(data == 'Not found'){
+                            alert('Model NOT deployed')
+                        }
+                        else{
+                            data = JSON.parse(data);
+                            console.log(data.output_val)
+                            $('#output_val').text(data.output_val);
+                            $('#ip_address').text(data.ip_address);
+
+                        }
                     }
                 });
                 event.preventDefault();

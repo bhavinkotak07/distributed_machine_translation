@@ -1,6 +1,7 @@
 import sys
 if __name__ == "__main__":
     name = sys.argv[1]
+    instances = sys.argv[2]
     fname = name + '.yaml'
     confg = '''apiVersion: apps/v1
 kind: Deployment
@@ -9,7 +10,7 @@ metadata:
     app.kubernetes.io/name: ''' + name +'''
   name: '''+name+'''
 spec: 
-  replicas: 1
+  replicas: ''' + instances + '''
   selector: 
     matchLabels: 
       app.kubernetes.io/name: ''' + name + '''

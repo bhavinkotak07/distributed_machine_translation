@@ -36,7 +36,7 @@ sleep 2
 
 echo 'hello'
 
-python temp1.py $1
+python temp1.py $1 $2
 echo 'world'
 rm temp1.py
 echo 'removed temp1.py'
