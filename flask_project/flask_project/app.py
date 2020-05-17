@@ -44,13 +44,22 @@ def change_status(model):
     time.sleep(10)
     model_status[model] = 'DEPLOYED'
 
+def scale_model(model_name, instances):
+    out = subprocess.Popen(['bash','scale.sh', model_name, instances],stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    stdout, stderr = out.communicate()
+    res = str(stdout )
+    print('Model status:', model_status)
+    model_status[model_name] = 'DEPLOYED'
+    #running_instances[model_name] = instances
+    print('Model status:', model_status)
+    return res
 def deploy_model(model_name, instances):
     out = subprocess.Popen(['bash','deploy_model.sh', model_name, instances],stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     stdout, stderr = out.communicate()
     res = str(stdout )
     print('Model status:', model_status)
     model_status[model_name] = 'DEPLOYED'
-    running_instances[model_name] = instances
+    #running_instances[model_name] = instances
     print('Model status:', model_status)
     return res
 def stop_model(model_name):
@@ -70,6 +79,8 @@ def get_ip():
 
 @app.route('/api/stop', methods=['GET','POST'])
 def stop():
+    global running_instances
+    global model_status
     if request.method == 'GET':
         model = request.args.get('button_id')
         #instances = request.args.get('instances')
@@ -81,9 +92,29 @@ def stop():
     t.start()
     return redirect("/show_models")
     #return redirect("/show_models")
+@app.route('/api/scale', methods=['GET', 'POST'])
+def scale():
+    #res = deploy_model(model)
+    global running_instances
+    global model_status
+    if request.method == 'GET':
+        model = request.args.get('button_id')
+        instances = request.args.get('instances')        
+    else:
+        model = request.form['button_id']
+        instances = request.form['instances']
+    #return str(model + "|" + instances)
 
+    model_status[model] = 'SCALING' 
+    running_instances[model] = instances
+
+    t = threading.Thread(target=scale_model, args=[model,instances] )
+    t.start()
+    return redirect("/show_models")
 @app.route('/api/deploy', methods=['GET', 'POST'])
 def deploy():
+    global running_instances
+    global model_status
     #res = deploy_model(model)
     if request.method == 'GET':
         model = request.args.get('button_id')
@@ -93,7 +124,7 @@ def deploy():
         model = request.form['button_id']
         instances = request.form['instances']
     #return str(model + "|" + instances)
-
+    running_instances[model] = instances
     model_status[model] = 'IN PROGRESS' 
 
     t = threading.Thread(target=deploy_model, args=[model,instances] )
@@ -123,6 +154,8 @@ def show_models():
 @app.route('/api/list_models')
 def list_models():
     result = []
+    global running_instances
+    global model_status
     for key in url_mapper:
         data = {}
         model_name = url_mapper[key]
@@ -169,7 +202,6 @@ def process():
     request_reply = requests.post(url=end_point, data=data)
     output_val = request_reply.text
     print(output_val)
-
     return output_val
     #return jsonify({'output_val' : output_val})
 

@@ -22,5 +22,5 @@ kubectl apply -f pyflask-svc-deploy.yaml
 kubectl expose deployment pyflask --type=LoadBalancer --port=5000
 sleep 2
 minikube service pyflask
-sleep 2
+sleep 3
 
